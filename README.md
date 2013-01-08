@@ -2,7 +2,7 @@
 
 PCBarNextButton is a `UIBarButtonItem` subclass that provides a forward-facing arrow button, the complement to iOS's built-in back button.
 
-![Forward-pointing Bar Button](https://github.com/pnc/IconButton/raw/master/example.png "Forward-pointing Bar Button")
+![Forward-pointing Bar Button](https://github.com/pnc/PCBarNextButton/raw/master/example.png "Forward-pointing Bar Button")
 
 ## Attributions
 
