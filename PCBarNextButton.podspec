@@ -8,6 +8,5 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/pnc/PCBarNextButton.git", :branch => 'master' }
   s.platform     = :ios, '4.1'
   s.source_files = '*.{h,m}'
-  s.resources    = "Resources/*.png"
   s.requires_arc = true
 end

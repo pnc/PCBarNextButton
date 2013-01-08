@@ -4,6 +4,8 @@ PCBarNextButton is a `UIBarButtonItem` subclass that provides a forward-facing a
 
 ![Forward-pointing Bar Button](https://github.com/pnc/PCBarNextButton/raw/master/example.png "Forward-pointing Bar Button")
 
+You need to supply your own `forward-button.png` and `forward-button@2x.png`. There are examples in the `Resources/` directory.
+
 ## Attributions
 
 Parts of this library, including image resources, come from the following Stack Overflow answer:
