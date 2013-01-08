@@ -50,10 +50,17 @@
     NSMethodSignature *signature =[self.target methodSignatureForSelector:self.action];
     if (2 == signature.numberOfArguments) {
       // Just self and _cmd
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
       [self.target performSelector:self.action];
+#pragma clang diagnostic pop
+
     } else if (3 == signature.numberOfArguments) {
       // self, _cmd, and sender
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
       [self.target performSelector:self.action withObject:self];
+#pragma clang diagnostic pop
     } else {
       NSAssert(NO, @"Target's action expects too many arguments.");
     }
