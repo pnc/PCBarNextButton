@@ -27,22 +27,48 @@
 }
 
 - (void)initialize {
-  UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-  UIImage *image = [[UIImage imageNamed:@"forward-button"] stretchableImageWithLeftCapWidth:6 topCapHeight:15];
-  [rightButton setBackgroundImage:image forState:UIControlStateNormal];
-  rightButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
-  rightButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
-  rightButton.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.05];
-  [rightButton setTitle:self.title forState:UIControlStateNormal];
-  [rightButton sizeToFit];
-  CGRect frame = rightButton.frame;
-  rightButton.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width + 20, 32);
-  rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, -5, 0, 0);
-  rightButton.enabled = self.enabled;
-
-  self.customView = rightButton;
-  self.internalButton = rightButton;
-  [self.internalButton addTarget:self action:@selector(tapped:) forControlEvents:UIControlEventTouchUpInside];
+  NSString *version = [[UIDevice currentDevice] systemVersion];
+  if ([version compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending) {
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    UIImage *image = [UIImage imageNamed:@"forward-arrow-ios7"];
+    [rightButton setImage:image forState:UIControlStateNormal];
+    [rightButton setTitle:self.title forState:UIControlStateNormal];
+    UIButton *refButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [rightButton.titleLabel setFont:refButton.titleLabel.font];
+    rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, 10, 0, 0);
+    [rightButton sizeToFit];
+    CGRect frame = rightButton.frame;
+    frame.size.width += 10;
+    frame.size.height += 10;
+    rightButton.frame = frame;
+    rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, rightButton.frame.size.width - image.size.width, 0, 0);
+    rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, -image.size.width - 10, 0, 0);
+    rightButton.enabled = self.enabled;
+    UIView *buttonView = [[UIView alloc] initWithFrame:rightButton.frame];
+    [buttonView addSubview:rightButton];
+    frame.origin.x += 8;
+    rightButton.frame = frame;
+    self.customView = buttonView;
+    self.internalButton = rightButton;
+  } else {
+    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    UIImage *image = [[UIImage imageNamed:@"forward-button"] stretchableImageWithLeftCapWidth:6 topCapHeight:15];
+    [rightButton setBackgroundImage:image forState:UIControlStateNormal];
+    rightButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
+    rightButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
+    rightButton.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.05];
+    [rightButton setTitle:self.title forState:UIControlStateNormal];
+    [rightButton sizeToFit];
+    CGRect frame = rightButton.frame;
+    rightButton.frame = CGRectMake(frame.origin.x, frame.origin.y, frame.size.width + 20, 32);
+    rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, -5, 0, 0);
+    rightButton.enabled = self.enabled;
+    self.customView = rightButton;
+    self.internalButton = rightButton;
+  }
+  [self.internalButton addTarget:self
+                          action:@selector(tapped:)
+                forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (void)tapped:(id)sender {
