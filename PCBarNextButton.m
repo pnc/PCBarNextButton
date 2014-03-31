@@ -1,5 +1,17 @@
 #import "PCBarNextButton.h"
 
+@interface PCBarNextButtonOffset : UIButton
+
+@end
+
+@implementation PCBarNextButtonOffset
+
+- (UIEdgeInsets)alignmentRectInsets {
+  return UIEdgeInsetsMake(0, 0, 0, 8);
+}
+
+@end
+
 @interface PCBarNextButton()
 - (void)initialize;
 - (void)tapped:(id)sender;
@@ -29,7 +41,7 @@
 - (void)initialize {
   NSString *version = [[UIDevice currentDevice] systemVersion];
   if ([version compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending) {
-    UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    PCBarNextButtonOffset *rightButton = [PCBarNextButtonOffset buttonWithType:UIButtonTypeSystem];
     UIImage *image = [UIImage imageNamed:@"forward-arrow-ios7"];
     [rightButton setImage:image forState:UIControlStateNormal];
     [rightButton setTitle:self.title forState:UIControlStateNormal];
@@ -44,11 +56,7 @@
     rightButton.imageEdgeInsets = UIEdgeInsetsMake(0, rightButton.frame.size.width - image.size.width, 0, 0);
     rightButton.titleEdgeInsets = UIEdgeInsetsMake(0, -image.size.width - 10, 0, 0);
     rightButton.enabled = self.enabled;
-    UIView *buttonView = [[UIView alloc] initWithFrame:rightButton.frame];
-    [buttonView addSubview:rightButton];
-    frame.origin.x += 8;
-    rightButton.frame = frame;
-    self.customView = buttonView;
+    self.customView = rightButton;
     self.internalButton = rightButton;
   } else {
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
