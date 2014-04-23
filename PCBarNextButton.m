@@ -1,7 +1,10 @@
 #import "PCBarNextButton.h"
 
 @interface PCBarNextButtonOffset : UIButton
+@end
 
+@interface PCBarNextButton ()
+@property (nonatomic) UIImage *tintedImage;
 @end
 
 @implementation PCBarNextButtonOffset
@@ -39,8 +42,7 @@
 }
 
 - (void)initialize {
-  NSString *version = [[UIDevice currentDevice] systemVersion];
-  if ([version compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending) {
+  if ([self flatStyle]) {
     PCBarNextButtonOffset *rightButton = [PCBarNextButtonOffset buttonWithType:UIButtonTypeSystem];
     UIImage *image = [UIImage imageNamed:@"forward-arrow-ios7"];
     [rightButton setImage:image forState:UIControlStateNormal];
@@ -60,8 +62,6 @@
     self.internalButton = rightButton;
   } else {
     UIButton *rightButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    UIImage *image = [[UIImage imageNamed:@"forward-button"] stretchableImageWithLeftCapWidth:6 topCapHeight:15];
-    [rightButton setBackgroundImage:image forState:UIControlStateNormal];
     rightButton.titleLabel.font = [UIFont boldSystemFontOfSize:12];
     rightButton.titleLabel.shadowOffset = CGSizeMake(0, -1);
     rightButton.titleLabel.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.05];
@@ -73,15 +73,28 @@
     rightButton.enabled = self.enabled;
     self.customView = rightButton;
     self.internalButton = rightButton;
+    [self configureColoredButtonImage];
   }
   [self.internalButton addTarget:self
                           action:@selector(tapped:)
                 forControlEvents:UIControlEventTouchUpInside];
 }
 
+- (void)configureColoredButtonImage {
+  UIImage *image = [[self tintedImage] stretchableImageWithLeftCapWidth:6
+                                                           topCapHeight:15];
+  [self.internalButton setBackgroundImage:image
+                                 forState:UIControlStateNormal];
+}
+
+- (BOOL)flatStyle {
+  NSString *version = [[UIDevice currentDevice] systemVersion];
+  return [version compare:@"7.0" options:NSNumericSearch] != NSOrderedAscending;
+}
+
 - (void)tapped:(id)sender {
   if (self.target && self.action) {
-    NSMethodSignature *signature =[self.target methodSignatureForSelector:self.action];
+    NSMethodSignature *signature = [self.target methodSignatureForSelector:self.action];
     if (2 == signature.numberOfArguments) {
       // Just self and _cmd
 #pragma clang diagnostic push
@@ -98,6 +111,39 @@
     } else {
       NSAssert(NO, @"Target's action expects too many arguments.");
     }
+  }
+}
+
+- (UIImage *)tintedImage {
+  if (!_tintedImage) {
+    UIColor *tintColor = self.tintColor ?: [UIColor colorWithRed:.54
+                                                           green:.62
+                                                            blue:.73
+                                                           alpha:1.0];
+    UIImage *originalImage = [UIImage imageNamed:@"forward-button"];
+    CIImage *image = [CIImage imageWithCGImage:[originalImage CGImage]];
+
+    CIContext *context = [CIContext contextWithOptions:nil];
+    CIFilter *filter = [CIFilter filterWithName:@"CIColorMonochrome"];
+    [filter setValue:image forKey:kCIInputImageKey];
+    [filter setValue:[CIColor colorWithCGColor:[tintColor CGColor]]
+              forKey:@"inputColor"];
+    CIImage *result = [filter valueForKey:kCIOutputImageKey];
+    CGRect extent = [result extent];
+    CGImageRef cgImage = [context createCGImage:result fromRect:extent];
+
+    _tintedImage = [UIImage imageWithCGImage:cgImage
+                                       scale:originalImage.scale
+                                 orientation:UIImageOrientationUp];
+  }
+  return _tintedImage;
+}
+
+- (void)setTintColor:(UIColor *)tintColor {
+  [super setTintColor:tintColor];
+  if (![self flatStyle]) {
+    _tintedImage = nil;
+    [self configureColoredButtonImage];
   }
 }
 

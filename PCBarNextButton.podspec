@@ -9,4 +9,5 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '4.1'
   s.source_files = '*.{h,m}'
   s.requires_arc = true
+  s.resources    = ["Resources/*.png"]
 end
