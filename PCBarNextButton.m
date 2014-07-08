@@ -4,6 +4,7 @@
 @end
 
 @interface PCBarNextButton ()
+@property (nonatomic) UIColor *appearanceTintColor;
 @property (nonatomic) UIImage *tintedImage;
 @end
 
@@ -42,6 +43,12 @@
 }
 
 - (void)initialize {
+  UIBarButtonItem *proxy = [UIBarButtonItem appearanceWhenContainedIn:[PCBarNextButton class], nil];
+  self.appearanceTintColor = proxy.tintColor ?: [UIColor
+                                                 colorWithRed:.54
+                                                 green:.62
+                                                 blue:.73
+                                                 alpha:1.0];
   if ([self flatStyle]) {
     PCBarNextButtonOffset *rightButton = [PCBarNextButtonOffset buttonWithType:UIButtonTypeSystem];
     UIImage *image = [UIImage imageNamed:@"forward-arrow-ios7"];
@@ -116,16 +123,21 @@
 
 - (UIImage *)tintedImage {
   if (!_tintedImage) {
-    UIColor *tintColor = self.tintColor ?: [UIColor colorWithRed:.54
-                                                           green:.62
-                                                            blue:.73
-                                                           alpha:1.0];
+    UIColor *tintColor = self.tintColor ?: self.appearanceTintColor;
     UIImage *originalImage = [UIImage imageNamed:@"forward-button"];
     CIImage *image = [CIImage imageWithCGImage:[originalImage CGImage]];
 
     CIContext *context = [CIContext contextWithOptions:nil];
+
+    CIFilter *compensate = [CIFilter filterWithName:@"CIColorControls"];
+    [compensate setDefaults];
+    [compensate setValue:image forKey:kCIInputImageKey];
+    [compensate setValue:[NSNumber numberWithFloat:0.2] forKey:@"inputBrightness"];
+    [compensate setValue:[NSNumber numberWithFloat:1.4] forKey:@"inputContrast"];
+
     CIFilter *filter = [CIFilter filterWithName:@"CIColorMonochrome"];
-    [filter setValue:image forKey:kCIInputImageKey];
+    [filter setDefaults];
+    [filter setValue:[compensate valueForKey:kCIOutputImageKey] forKey:kCIInputImageKey];
     [filter setValue:[CIColor colorWithCGColor:[tintColor CGColor]]
               forKey:@"inputColor"];
     CIImage *result = [filter valueForKey:kCIOutputImageKey];
