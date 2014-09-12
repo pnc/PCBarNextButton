@@ -159,6 +159,14 @@
   }
 }
 
+- (void)setAppearanceTintColor:(UIColor *)appearanceTintColor {
+  _appearanceTintColor = appearanceTintColor;
+  if (![self flatStyle]) {
+    _tintedImage = nil;
+    [self configureColoredButtonImage];
+  }
+}
+
 - (void)setEnabled:(BOOL)enabled {
   [super setEnabled:enabled];
   self.internalButton.enabled = enabled;
